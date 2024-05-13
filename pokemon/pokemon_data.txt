@@ -1,0 +1,6 @@
+Pikachu 500 60 ELECTRIC NATURE Electric_stan 90
+Charmander 600 80 FIRE WATER Fireball 70
+Bulbasaur 550 65 NATURE POISON Entangling_vine 30
+Blastoise 550 70 WATER PSYCHIC Tsunami
+Mewtwo 580 75 PSYCHIC FIRE Mind_Attack
+Genrar 570 70 POISON ELECTRIC Poisonous_cloud
