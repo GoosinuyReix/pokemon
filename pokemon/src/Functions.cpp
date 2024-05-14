@@ -243,12 +243,17 @@ void fight(vector <Pokemon>& mass_for_me, vector <Pokemon>& mass_for_enemy, int 
 								isPlaying = false;
 								player_for_fight = 1; // —мена игрока после завершени€ анимации игрока 2
 							}
-							nextFrameDataOffset = imLightning.width * imLightning.height * 4 * currentAnimFrame;
-							UpdateTexture(texLightning, ((unsigned char*)imLightning.data) + nextFrameDataOffset);
 							frameCounter = 0;
 						}
-						DrawTexture(texLightning, 1560, 380, WHITE);
-					}
+						float frameWidth = (float)(texWave.width / animFrames_for_water);
+						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texWave.height };
+						if (player_for_fight == 1) {
+							if (currentPos_for_wave.x < endPos_for_wave.x) {
+								currentPos_for_wave.x += 20;
+								if (currentPos_for_wave.x >= endPos_for_wave.x) {
+									currentPos_for_wave = endPos_for_wave;
+									isPlaying = false;
+									player_for_fight = 2;
 				}
 				if (mass_for_enemy[0].special_name == "Fireball") {
 					if (isPlaying) {
