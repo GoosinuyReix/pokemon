@@ -1,6 +1,6 @@
-Pikachu 500 60 100 ELECTRIC NATURE Electric_stan 90
-Charmander 600 80 100 FIRE WATER Fireball 70
-Bulbasaur 550 65 100 NATURE POISON Entangling_vine 30
-Blastoise 550 70 100 WATER PSYCHIC Tsunami 85
-Mewtwo 580 75 100 PSYCHIC FIRE Mind_Attack 70
-Genrar 570 70 100 POISON ELECTRIC Poisonous_cloud 90
+Pikachu 500 60 60 ELECTRIC NATURE Electric_stan 90
+Charmander 600 80 60 FIRE WATER Fireball 70
+Bulbasaur 550 65 60 NATURE POISON Entangling_vine 30
+Blastoise 550 70 60 WATER PSYCHIC Tsunami 85
+Mewtwo 580 75 60 PSYCHIC FIRE Mind_Attack 70
+Genrar 570 70 60 POISON ELECTRIC Poisonous_cloud 90

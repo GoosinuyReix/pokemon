@@ -15,6 +15,7 @@ struct Pokemon {
 	int special_damage;
 	string element, weakness;
 	Texture2D texture;
+	bool isDead = false;
 };
 
 struct Button {
@@ -26,6 +27,7 @@ enum GameState {
 	STATE_CHOOSE_MODE,
 	STATE_CHOOSE_POKEMON,
 	STATE_FIGHT,
+	STATE_END,
 };
 
 enum NameOfSuper {
@@ -56,6 +58,7 @@ extern Texture2D texLightning;
 extern Texture2D texWave;
 extern Texture2D texWave2;
 extern Font font;
+extern GameState state;
 extern bool switched;
 extern bool isShowing;
 extern bool choosed_pokemon1;
@@ -66,6 +69,7 @@ extern float timer;
 extern const float displayDuration;
 extern int i1;
 extern int i2;
+extern int win_player;
 extern unsigned int nextFrameDataOffset;
 extern int currentAnimFrame;
 extern int frameDelay;
@@ -75,7 +79,6 @@ extern int animFrames_for_fire;
 extern int animFrames_for_water;
 extern int animFrames_for_claw;
 extern bool isPlaying;
-//extern bool isDamageApplied;
 extern Vector2 startPos1;
 extern Vector2 endPos1;
 extern Vector2 currentPos1;
@@ -106,6 +109,8 @@ Color Theme_of_Weakness(string weakness);
 void DrawInfo(vector<Pokemon>& pokemons);
 
 vector<Pokemon> choose_the_pokemon(vector<Pokemon>& mass, vector<Pokemon>& mass_end, int& mod, int& pos_x);
+
+int chooseNextAlivePokemonIndex(vector<Pokemon>& pokemons, int currentIndex);
 
 void fight(vector <Pokemon>& mass_for_me, vector <Pokemon>& mass_for_enemy, int cnt, int& pos_y, int& pos_x, int& player_for_fight, Texture2D texLightning, Image imLightning);
 

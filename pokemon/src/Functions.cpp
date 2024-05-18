@@ -103,9 +103,17 @@ vector<Pokemon> choose_the_pokemon(vector<Pokemon>& mass, vector<Pokemon>& mass_
 	return mass_end;
 }
 
-void other_pokemons() {
-
+int chooseNextAlivePokemonIndex(vector<Pokemon>& pokemons, int currentIndex) {
+	int size = pokemons.size();
+	for (int i = 1; i < size; ++i) {
+		int nextIndex = (currentIndex + i) % size;
+		if (!pokemons[nextIndex].isDead) {
+			return nextIndex;
+		}
+	}
+	return currentIndex;
 }
+
 
 void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player2, int cnt, int& pos_y, int& pos_x, int& player_for_fight, Texture2D texLightning, Image imLightning) {
 	if (cnt == 1) {
@@ -370,41 +378,41 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					}
 					break;
 				}
-							/*case Entangling_vine: {
-								if (isShowing) {
-									if (player_for_fight == 1) {
-										DrawTexture(texGrass, 1690, 700, WHITE);
-									}
-									else {
-										DrawTexture(texGrass, 200, 570, WHITE);
-									}
-								}
-								break;
+				/*case Entangling_vine: {
+					if (isShowing) {
+						if (player_for_fight == 1) {
+							DrawTexture(texGrass, 1690, 700, WHITE);
+						}
+						else {
+							DrawTexture(texGrass, 200, 570, WHITE);
+						}
+					}
+					break;
+				}
+				case Poisonous_cloud: {
+					if (isPlaying) {
+						frameCounter++;
+						if (frameCounter >= frameDelay) {
+							frameCounter = 0;
+							currentAnimFrame++;
+							if (currentAnimFrame >= 40) {
+								isPlaying = false;
+								player_for_fight = (player_for_fight == 1) ? 2 : 1;
 							}
-							case Poisonous_cloud: {
-								if (isPlaying) {
-									frameCounter++;
-									if (frameCounter >= frameDelay) {
-										frameCounter = 0;
-										currentAnimFrame++;
-										if (currentAnimFrame >= 40) {
-											isPlaying = false;
-											player_for_fight = (player_for_fight == 1) ? 2 : 1;
-										}
-										UpdateTexture(texPoison, ((unsigned char*)imPoison.data) + nextFrameDataOffset);
-									}
-									float frameWidth = (float)(texPoison.width / 40);
-									Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texPoison.height };
+							UpdateTexture(texPoison, ((unsigned char*)imPoison.data) + nextFrameDataOffset);
+						}
+						float frameWidth = (float)(texPoison.width / 40);
+						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texPoison.height };
 
-									if (player_for_fight == 1) {
-										DrawTextureRec(texPoison, frameRec, currentPos_for_cloud, WHITE);
-									}
-									else {
-										DrawTextureRec(texPoison, frameRec, currentPos2_for_cloud, WHITE);
-									}
-								}
-								break;
-							}*/
+						if (player_for_fight == 1) {
+							DrawTextureRec(texPoison, frameRec, currentPos_for_cloud, WHITE);
+						}
+						else {
+							DrawTextureRec(texPoison, frameRec, currentPos2_for_cloud, WHITE);
+						}
+					}
+					break;
+				}*/
 			}
 		}
 		if (!position_changed && pos_y == 630) {
@@ -440,7 +448,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					position_changed = true;
 				}
 				if (IsKeyPressed(KEY_SPACE)) {
-					if (mass_for_me[0].mana + 10 <= 100) {
+					if (mass_for_me[0].mana + 10 <= 60) {
 						mass_for_me[0].mana += 10;
 						if (player_for_fight == 1) player_for_fight = 2;
 						else player_for_fight = 1;
@@ -577,11 +585,34 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			string message7 = "Others pokemon";
 			DrawTextEx(font, message7.c_str(), Vector2{ 850, 820 }, 74, 0, BLACK);
 			DrawTexture(arrow_left, 1250, pos_y, WHITE);
-			int i = (player_for_fight == 1) ? i1 : i2;
-			if (mass_for_me[i].health == 0 && mass_for_me.size() != 1) {
-				mass_for_me.erase(mass_for_me.begin() + i);
+
+			for (int j = 0; j < mass_for_player1.size(); ++j) {
+				if (mass_for_player1[j].health == 0 && !mass_for_player1[j].isDead) {
+					mass_for_player1[j].isDead = true;
+					i1 = chooseNextAlivePokemonIndex(mass_for_player1, i1);
+				}
 			}
-			if (mass_for_me[i].mana < 10) pos_y = 630;
+			for (int j = 0; j < mass_for_player2.size(); ++j) {
+				if (mass_for_player2[j].health == 0 && !mass_for_player2[j].isDead) {
+					mass_for_player2[j].isDead = true;
+					i2 = chooseNextAlivePokemonIndex(mass_for_player2, i2);
+				}
+			}
+			int i = (player_for_fight == 1) ? i1 : i2;
+			for (int j = 0; j < mass_for_me.size(); ++j) {
+				if (mass_for_me[j].health == 0 && !mass_for_me[j].isDead) {
+					mass_for_me[j].isDead = true;
+
+					if (player_for_fight == 1) {
+						i1 = chooseNextAlivePokemonIndex(mass_for_me, i1);
+					}
+					else {
+						i2 = chooseNextAlivePokemonIndex(mass_for_me, i2);
+					}
+				}
+			}
+
+
 			if (!position_changed && pos_y == 430) {
 				if (mass_for_me[i].mana - 25 < 0) {
 					if (IsKeyPressed(KEY_DOWN)) {
@@ -595,8 +626,10 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				}
 				string message3 = "Damage: " + to_string(mass_for_me[i1].damage);
 				DrawTextEx(font, message3.c_str(), { 850, 950 }, 80, 0, BLACK);
-
-				if (IsKeyPressed(KEY_SPACE)) {
+				if (mass_for_me[i].mana - 10 < 0) {
+					pos_y = 630;
+				}
+				else if (IsKeyPressed(KEY_SPACE)) {
 					mass_for_me[i].mana -= 10;
 					if (player_for_fight == 1) {
 						if (mass_for_enemy[i2].weakness == mass_for_me[i1].element) {
@@ -895,7 +928,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						position_changed = true;
 					}
 					if (IsKeyPressed(KEY_SPACE)) {
-						if (mass_for_me[i].mana + 10 <= 100) {
+						if (mass_for_me[i].mana + 10 <= 60) {
 							mass_for_me[i].mana += 10;
 							if (player_for_fight == 1) player_for_fight = 2;
 							else player_for_fight = 1;
@@ -994,21 +1027,13 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					DrawTextEx(font, messge1.c_str(), Vector2{ 850, 990 }, 50, 0, BLACK);
 				}
 			}
-			if (player_for_fight == 1) {
-				if (mass_for_me.size() == 1 && mass_for_me[i1].health == 0) {
-					DrawTextEx(font, "Player 2 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
-				}
-				else if (mass_for_enemy.size() == 1 && mass_for_enemy[i2].health == 0) {
-					DrawTextEx(font, "Player 1 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
-				}
+			if (mass_for_me[0].health == 0 && mass_for_me[1].health == 0 && mass_for_me[2].health == 0) {
+				DrawTextEx(font, "Player 2 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
+				state = STATE_END;
 			}
-			else {
-				if (mass_for_me.size() == 1 && mass_for_me[i2].health == 0) {
-					DrawTextEx(font, "Player 2 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
-				}
-				else if (mass_for_enemy.size() == 1 && mass_for_enemy[i1].health == 0) {
-					DrawTextEx(font, "Player 1 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
-				}
+			else if (mass_for_enemy[0].health == 0 && mass_for_enemy[1].health == 0 && mass_for_enemy[2].health == 0) {
+				DrawTextEx(font, "Player 1 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
+				state = STATE_END;
 			}
 		}
 	}
