@@ -11,7 +11,7 @@ Color Theme_of_element(string element) {
 	if (element == "ELECTRIC") return ColorFromHex(0xEED626);
 	if (element == "FIRE") return ORANGE;
 	if (element == "NATURE") return GREEN;
-	if (element == "PSYCHIC") return GRAY;
+	if (element == "SOUND") return GRAY;
 	if (element == "WATER") return BLUE;
 	if (element == "POISON") return PURPLE;
 }
@@ -20,7 +20,7 @@ Color Theme_of_Weakness(string weakness) {
 	if (weakness == "ELECTRIC") return ColorFromHex(0xEED626);
 	if (weakness == "FIRE") return ORANGE;
 	if (weakness == "NATURE") return GREEN;
-	if (weakness == "PSYCHIC") return GRAY;
+	if (weakness == "SOUND") return GRAY;
 	if (weakness == "WATER") return BLUE;
 	if (weakness == "POISON") return PURPLE;
 }
@@ -115,7 +115,7 @@ int chooseNextAlivePokemonIndex(vector<Pokemon>& pokemons, int currentIndex) {
 }
 
 
-void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player2, int cnt, int& pos_y, int& pos_x, int& player_for_fight, Texture2D texLightning, Image imLightning) {
+void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player2, int cnt, int& pos_y, int& pos_x, int& player_for_fight) {
 	if (cnt == 1) {
 		string message = "Player " + to_string(player_for_fight) + " attack the enemy";
 		DrawTextEx(font, message.c_str(), Vector2{ 750, 150 }, 64, 0, BLACK);
@@ -182,7 +182,6 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			}
 			string message4 = mass_for_me[0].special_name;
 			DrawTextEx(font, message4.c_str(), { 900, 900 }, 80, 0, BLACK);
-			float deltaTime = GetFrameTime();
 			if (IsKeyPressed(KEY_SPACE)) {
 				isShowing = true;
 				timer = 0.0f;
@@ -199,7 +198,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			else if (mass_for_me[0].special_name == "Fireball") name_of_super = Fireball;
 			else if (mass_for_me[0].special_name == "Entangling_vine") name_of_super = Entangling_vine;
 			else if (mass_for_me[0].special_name == "Tsunami") name_of_super = Tsunami;
-			else if (mass_for_me[0].special_name == "Mind_Attack") name_of_super = Mind_Attack;
+			else if (mass_for_me[0].special_name == "Sound_Attack") name_of_super = Sound_Attack;
 			else if (mass_for_me[0].special_name == "Poisonous_cloud") name_of_super = Poisonous_cloud;
 
 			switch (name_of_super)
@@ -209,7 +208,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						frameCounter++;
 						if (frameCounter >= frameDelay) {
 							currentAnimFrame++;
-							if (currentAnimFrame >= animFrames_for_light) {
+							if (currentAnimFrame >= 5) {
 								currentAnimFrame = 0;
 								isPlaying = false;
 								if (mass_for_enemy[0].weakness == mass_for_me[0].element) {
@@ -359,16 +358,6 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 								if (currentPos2_for_wave.x <= endPos2_for_wave.x) {
 									currentPos2_for_wave = endPos2_for_wave;
 									isPlaying = false;
-									if (mass_for_enemy[0].weakness == mass_for_me[0].element) {
-										mass_for_enemy[0].health -= int(mass_for_me[0].special_damage * 1.2);
-									}
-									else {
-										mass_for_enemy[0].health -= mass_for_me[0].special_damage;
-									}
-									mass_for_me[0].mana -= 25;
-									if (mass_for_enemy[0].health - mass_for_me[0].special_damage < 0) {
-										mass_for_enemy[0].health = 0;
-									}
 									player_for_fight = 1;
 									pos_y = 430;
 								}
@@ -378,13 +367,35 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					}
 					break;
 				}
-				/*case Entangling_vine: {
-					if (isShowing) {
+				case Entangling_vine: {
+					if (isPlaying) {
+						frameCounter++;
+						if (frameCounter >= frameDelay) {
+							currentAnimFrame++;
+							if (currentAnimFrame >= animFrames_for_light) {
+								currentAnimFrame = 0;
+								isPlaying = false;
+								if (mass_for_enemy[0].weakness == mass_for_me[0].element) {
+									mass_for_enemy[0].health -= int(mass_for_me[0].special_damage * 1.2);
+								}
+								else {
+									mass_for_enemy[0].health -= mass_for_me[0].special_damage;
+								}
+								mass_for_me[0].mana -= 25;
+								if (mass_for_enemy[0].health < 0) {
+									mass_for_enemy[0].health = 0;
+								}
+								player_for_fight = (player_for_fight == 1) ? 2 : 1;
+								pos_y = 430;
+							}
+							frameCounter = 0;
+						}
+
 						if (player_for_fight == 1) {
-							DrawTexture(texGrass, 1690, 700, WHITE);
+							DrawTexture(texGrass, 1660, 670, WHITE);
 						}
 						else {
-							DrawTexture(texGrass, 200, 570, WHITE);
+							DrawTexture(texGrass, 230, 670, WHITE);
 						}
 					}
 					break;
@@ -392,27 +403,71 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				case Poisonous_cloud: {
 					if (isPlaying) {
 						frameCounter++;
+						if (frameCounter >= frameDelay_for_cloud) {
+							frameCounter = 0;
+							currentAnimFrame++;
+							if (currentAnimFrame >= 18) {
+								currentAnimFrame = 0;
+								isPlaying = false;
+								if (mass_for_enemy[0].weakness == mass_for_me[0].element) {
+									mass_for_enemy[0].health -= int(mass_for_me[0].special_damage * 1.2);
+								}
+								else {
+									mass_for_enemy[0].health -= mass_for_me[0].special_damage;
+								}
+								mass_for_me[0].mana -= 25;
+								if (mass_for_enemy[0].health - mass_for_me[0].special_damage < 0) {
+									mass_for_enemy[0].health = 0;
+								}
+								if (player_for_fight == 1) player_for_fight = 2;
+								else player_for_fight = 1;
+								pos_y = 430;
+							}
+						}
+						float frameWidth = (float)(texCloud.width / 18);
+						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texCloud.height };
+
+						if (player_for_fight == 1) {
+							DrawTextureRec(texCloud, frameRec, position1, WHITE);
+						}
+						else {
+							DrawTextureRec(texCloud, frameRec, position2, WHITE);
+						}
+						break;
+					}
+				}
+				case Sound_Attack: {
+					if (isPlaying) {
+						frameCounter++;
 						if (frameCounter >= frameDelay) {
 							frameCounter = 0;
 							currentAnimFrame++;
-							if (currentAnimFrame >= 40) {
+							if (currentAnimFrame >= 10) {
+								currentAnimFrame = 0;
 								isPlaying = false;
-								player_for_fight = (player_for_fight == 1) ? 2 : 1;
+								if (mass_for_enemy[0].weakness == mass_for_me[0].element) {
+									mass_for_enemy[0].health -= int(mass_for_me[0].special_damage * 1.2);
+								}
+								else {
+									mass_for_enemy[0].health -= mass_for_me[0].special_damage;
+								}
+								mass_for_me[0].mana -= 25;
+								if (mass_for_enemy[0].health - mass_for_me[0].special_damage < 0) {
+									mass_for_enemy[0].health = 0;
+								}
+								if (player_for_fight == 1) player_for_fight = 2;
+								else player_for_fight = 1;
+								pos_y = 430;
 							}
-							UpdateTexture(texPoison, ((unsigned char*)imPoison.data) + nextFrameDataOffset);
 						}
-						float frameWidth = (float)(texPoison.width / 40);
-						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texPoison.height };
+						float frameWidth = (float)(texSound.width / 10);
+						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texSound.height };
 
-						if (player_for_fight == 1) {
-							DrawTextureRec(texPoison, frameRec, currentPos_for_cloud, WHITE);
-						}
-						else {
-							DrawTextureRec(texPoison, frameRec, currentPos2_for_cloud, WHITE);
-						}
+						DrawTextureRec(texSound, frameRec, Vector2{400, 460}, WHITE);
+						
+						break;
 					}
-					break;
-				}*/
+				}
 			}
 		}
 		if (!position_changed && pos_y == 630) {
@@ -464,6 +519,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			DrawTextEx(font, "Player 1 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
 		}
 	}
+
 	if (cnt == 3) {
 		bool position_changed = false;
 		if (!choosed_pokemon1) {
@@ -613,7 +669,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			}
 
 
-			if (!position_changed && pos_y == 430) {
+			if (!position_changed && pos_y == 430 && !block) {
 				if (mass_for_me[i].mana - 25 < 0) {
 					if (IsKeyPressed(KEY_DOWN)) {
 						pos_y += 200;
@@ -658,7 +714,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				}
 			}
 
-			if (!position_changed && pos_y == 530) {
+			if (!position_changed && pos_y == 530 && !block) {
 				if (IsKeyPressed(KEY_DOWN)) {
 					pos_y += 100;
 					position_changed = true;
@@ -687,7 +743,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				else if (mass_for_me[i].special_name == "Fireball") name_of_super = Fireball;
 				else if (mass_for_me[i].special_name == "Entangling_vine") name_of_super = Entangling_vine;
 				else if (mass_for_me[i].special_name == "Tsunami") name_of_super = Tsunami;
-				else if (mass_for_me[i].special_name == "Mind_Attack") name_of_super = Mind_Attack;
+				else if (mass_for_me[i].special_name == "Sound_Attack") name_of_super = Sound_Attack;
 				else if (mass_for_me[i].special_name == "Poisonous_cloud") name_of_super = Poisonous_cloud;
 
 				switch (name_of_super)
@@ -758,7 +814,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 							if (player_for_fight == 1) {
 								if (currentPos1.x < endPos1.x)
 								{
-									currentPos1.x += 10;
+									currentPos1.x += 20;
 									if (currentPos1.x >= endPos1.x)
 									{
 										currentPos1 = endPos1;
@@ -788,7 +844,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 							else {
 								if (currentPos2.x > endPos2.x)
 								{
-									currentPos2.x -= 10;
+									currentPos2.x -= 20;
 									if (currentPos2.x <= endPos2.x)
 									{
 										currentPos2 = endPos2;
@@ -880,12 +936,157 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						}
 						break;
 					}
+					case Entangling_vine: {
+						if (isPlaying) {
+							frameCounter++;
+							if (frameCounter >= frameDelay) {
+								currentAnimFrame++;
+								if (currentAnimFrame >= animFrames_for_light) {
+									currentAnimFrame = 0;
+									isPlaying = false;
+									if (player_for_fight == 1) {
+										if (mass_for_enemy[i2].weakness == mass_for_me[i1].element) {
+											mass_for_enemy[i2].health -= int(mass_for_me[i1].special_damage * 1.2);
+										}
+										else {
+											mass_for_enemy[i2].health -= mass_for_me[i1].special_damage;
+										}
+										mass_for_me[i1].mana -= 25;
+										if (mass_for_enemy[i2].health - mass_for_me[i1].special_damage < 0) {
+											mass_for_enemy[i2].health = 0;
+										}
+										player_for_fight = 2;
+										pos_y = 430;
+									}
+									else {
+										if (mass_for_enemy[i1].weakness == mass_for_me[i2].element) {
+											mass_for_enemy[i1].health -= int(mass_for_me[i2].special_damage * 1.2);
+										}
+										else {
+											mass_for_enemy[i1].health -= mass_for_me[i2].special_damage;
+										}
+										mass_for_me[i2].mana -= 25;
+										if (mass_for_enemy[i1].health - mass_for_me[i2].special_damage < 0) {
+											mass_for_enemy[i1].health = 0;
+										}
+										player_for_fight = 1;
+										pos_y = 430;
+									}
+								}
+								frameCounter = 0;
+							}
+
+							if (player_for_fight == 1) {
+								DrawTexture(texGrass, 1660, 670, WHITE);
+							}
+							else {
+								DrawTexture(texGrass, 230, 670, WHITE);
+							}
+						}
+						break;
+					}
+					case Poisonous_cloud: {
+						if (isPlaying) {
+							frameCounter++;
+							if (frameCounter >= frameDelay_for_cloud) {
+								frameCounter = 0;
+								currentAnimFrame++;
+								if (currentAnimFrame >= 18) {
+									currentAnimFrame = 0;
+									isPlaying = false;
+									if (player_for_fight == 1) {
+										if (mass_for_enemy[i2].weakness == mass_for_me[i1].element) {
+											mass_for_enemy[i2].health -= int(mass_for_me[i1].special_damage * 1.2);
+										}
+										else {
+											mass_for_enemy[i2].health -= mass_for_me[i1].special_damage;
+										}
+										mass_for_me[i1].mana -= 25;
+										if (mass_for_enemy[i2].health - mass_for_me[i1].special_damage < 0) {
+											mass_for_enemy[i2].health = 0;
+										}
+										player_for_fight = 2;
+									}
+									else {
+										if (mass_for_enemy[i1].weakness == mass_for_me[i2].element) {
+											mass_for_enemy[i1].health -= int(mass_for_me[i2].special_damage * 1.2);
+										}
+										else {
+											mass_for_enemy[i1].health -= mass_for_me[i2].special_damage;
+										}
+										mass_for_me[i2].mana -= 25;
+										if (mass_for_enemy[i1].health - mass_for_me[i2].special_damage < 0) {
+											mass_for_enemy[i1].health = 0;
+										}
+										player_for_fight = 1;
+									}
+									pos_y = 430;
+								}
+							}
+							float frameWidth = (float)(texCloud.width / 18);
+							Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texCloud.height };
+
+							if (player_for_fight == 1) {
+								DrawTextureRec(texCloud, frameRec, position1, WHITE);
+							}
+							else {
+								DrawTextureRec(texCloud, frameRec, position2, WHITE);
+							}
+							break;
+						}
+					}
+					case Sound_Attack: {
+						if (isPlaying) {
+							frameCounter++;
+							if (frameCounter >= frameDelay) {
+								frameCounter = 0;
+								currentAnimFrame++;
+								if (currentAnimFrame >= 10) {
+									currentAnimFrame = 0;
+									isPlaying = false;
+									if (player_for_fight == 1) {
+										if (mass_for_enemy[i2].weakness == mass_for_me[i1].element) {
+											mass_for_enemy[i2].health -= int(mass_for_me[i1].special_damage * 1.2);
+										}
+										else {
+											mass_for_enemy[i2].health -= mass_for_me[i1].special_damage;
+										}
+										mass_for_me[i1].mana -= 25;
+										if (mass_for_enemy[i2].health - mass_for_me[i1].special_damage < 0) {
+											mass_for_enemy[i2].health = 0;
+										}
+										player_for_fight = 2;
+									}
+									else {
+										if (mass_for_enemy[i1].weakness == mass_for_me[i2].element) {
+											mass_for_enemy[i1].health -= int(mass_for_me[i2].special_damage * 1.2);
+										}
+										else {
+											mass_for_enemy[i1].health -= mass_for_me[i2].special_damage;
+										}
+										mass_for_me[i2].mana -= 25;
+										if (mass_for_enemy[i1].health - mass_for_me[i2].special_damage < 0) {
+											mass_for_enemy[i1].health = 0;
+										}
+										player_for_fight = 1;
+									}
+									pos_y = 430;
+								}
+							}
+							float frameWidth = (float)(texSound.width / 10);
+							Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texSound.height };
+
+							DrawTextureRec(texSound, frameRec, Vector2{ 400, 460 }, WHITE);
+
+							break;
+						}
+					}
 				}
 			}
 
-			if (!position_changed && pos_y == 630) {
+			if (!position_changed && pos_y == 630 && !block) {
 				string message5 = "Mana +10";
-				DrawTextEx(font, message5.c_str(), { 900, 900 }, 80, 0, BLACK);
+				DrawTextEx(font, message5.c_str(), { 850, 950 }, 80, 0, BLACK);
 				if (mass_for_me[i].mana - 10 < 0) {
 					if (IsKeyPressed(KEY_DOWN)) {
 						pos_y += 100;
@@ -938,7 +1139,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				}
 			}
 
-			if (!position_changed && pos_y == 730) {
+			if (!position_changed && pos_y == 730 && !block) {
 				if (IsKeyPressed(KEY_UP)) {
 					pos_y -= 100;
 					position_changed = true;
@@ -955,7 +1156,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					show = true;
 				}
 			}
-			if (show && !position_changed) {
+			if (show && !position_changed && !block) {
 				if (pos_y == 730) {
 					if (IsKeyPressed(KEY_DOWN)) {
 						pos_y += 80;
@@ -994,7 +1195,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						}
 					}
 				}
-				else if (pos_y == 870) {
+				else if (pos_y == 870 && !block) {
 					if (IsKeyPressed(KEY_UP)) {
 						pos_y -= 60;
 						position_changed = true;
@@ -1019,7 +1220,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					}
 				}
 			}
-			if (!position_changed && (pos_y == 810 || pos_y == 870) && show) {
+			if (!position_changed && (pos_y == 810 || pos_y == 870) && show && !block) {
 				if (show) {
 					string messge = mass_for_me[vec[0]].name + " " + to_string(mass_for_me[vec[0]].health);
 					DrawTextEx(font, messge.c_str(), Vector2{ 850, 920 }, 50, 0, BLACK);
@@ -1029,11 +1230,11 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			}
 			if (mass_for_me[0].health == 0 && mass_for_me[1].health == 0 && mass_for_me[2].health == 0) {
 				DrawTextEx(font, "Player 2 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
-				state = STATE_END;
+				block = true;
 			}
 			else if (mass_for_enemy[0].health == 0 && mass_for_enemy[1].health == 0 && mass_for_enemy[2].health == 0) {
 				DrawTextEx(font, "Player 1 win", Vector2{ 700, 1100 }, 150, 0, BLACK);
-				state = STATE_END;
+				block = true;
 			}
 		}
 	}

@@ -11,17 +11,17 @@ Image imFireball2;
 Image imWave;
 Image imWave2;
 Image imGrass;
-Image imPoison;
+Image imCloud;
+Image imSound;
 Image imLightning;
-Image imClaw;
-Texture2D texClaw;
-Texture2D texPoison;
+Texture2D texCloud;
 Texture2D texFireball;
 Texture2D texFireball2;
 Texture2D texLightning;
 Texture2D texWave;
 Texture2D texWave2;
 Texture2D texGrass;
+Texture2D texSound;
 Texture2D arrow;
 Texture2D arrow_left;
 Font font;
@@ -32,18 +32,19 @@ bool end_of_choose;
 bool switched;
 bool choosed_pokemon1 = false;
 bool choosed_pokemon2 = false;
+bool block = false;
 bool show = false;
 int i1 = 0;
 int i2 = 0;
 unsigned int nextFrameDataOffset = 0;
 int currentAnimFrame = 0;
 int frameDelay = 6;
+int frameDelay_for_cloud = 2;
 int frameCounter = 0;
-int animFrames_for_light = 0;
+int animFrames_for_light = 5;
 int animFrames_for_claw = 9;
 int animFrames_for_fire = 0;
 int animFrames_for_water = 11;
-int animFrames_for_cloud = 40;
 bool isPlaying = false;
 vector <int> vec;
 //bool isDamageApplied = false;
@@ -56,17 +57,12 @@ Vector2 currentPos2 = startPos2;
 Vector2 startPos_for_wave = { 200.0f, 460.0f };
 Vector2 endPos_for_wave = { 1600.0f, 460.0f };
 Vector2 currentPos_for_wave = startPos_for_wave;
-Vector2 currentPos_for_cloud = {1600, 460};
-Vector2 currentPos2_for_cloud = {200, 460};
 Vector2 startPos2_for_wave = { 1600.0f, 460.0f };
 Vector2 endPos2_for_wave = { 200.0f, 460.0f };
 Vector2 currentPos2_for_wave = startPos2_for_wave;
-Vector2 startPos_for_claw = { 200.0f, 460.0f };
-Vector2 endPos_for_claw = { 200.0f, 460.0f };
-Vector2 currentPos_for_claw = startPos_for_claw;
-Vector2 startPos2_for_claw = { 1600.0f, 460.0f };
-Vector2 endPos2_for_claw = { 1600.0f, 460.0f };
-Vector2 currentPos2_for_claw = startPos2_for_claw;
+Vector2 position1 = { 1430, 380 };
+Vector2 position2 = { 0, 380 };
+
 
 int main(int argc, char* args[]) {
 	vector <Pokemon> pokemons;
@@ -100,8 +96,6 @@ int main(int argc, char* args[]) {
 
 	imLightning = LoadImageAnim("data/lightning.gif", &animFrames_for_light);
 	texLightning = LoadTextureFromImage(imLightning);
-	imClaw = LoadImage("data/claw_sprite.png");
-	texClaw= LoadTextureFromImage(imClaw);
 	imFireball = LoadImageAnim("data/fireball1.gif", &animFrames_for_fire);
 	texFireball = LoadTextureFromImage(imFireball);
 	imFireball2 = LoadImageAnim("data/fireball2.gif", &animFrames_for_fire);
@@ -112,8 +106,10 @@ int main(int argc, char* args[]) {
 	texWave2= LoadTextureFromImage(imWave2);
 	imGrass = LoadImage("data/grass2.png");
 	texGrass= LoadTextureFromImage(imGrass);
-	imPoison = LoadImage("data/cloud_sprite.png");
-	texPoison= LoadTextureFromImage(imPoison);
+	imCloud = LoadImage("data/poison_sprite.png");
+	texCloud= LoadTextureFromImage(imCloud);
+	imSound = LoadImage("data/sound_sprite1.png");
+	texSound= LoadTextureFromImage(imSound);
 
 	Texture2D charmander = LoadTexture("data/charmander.png");
 	pokemons[1].texture = charmander;
@@ -158,7 +154,6 @@ int main(int argc, char* args[]) {
 
 
 		switch (state) {
-			// Выбор режима.
 			case STATE_CHOOSE_MODE: {
 				string mod_message = "Choose fight mod";
 				DrawTextEx(font, mod_message.c_str(), Vector2{ 850,150 }, 64, 0, BLACK);
@@ -217,7 +212,7 @@ int main(int argc, char* args[]) {
 				break;
 			}
 			case STATE_FIGHT: {
-				fight(choosed_pokemon_for_me, choosed_pokemon_for_enemy, mod, pos_y, pos_x_choosed, player_for_fight, texLightning, imLightning);
+				fight(choosed_pokemon_for_me, choosed_pokemon_for_enemy, mod, pos_y, pos_x_choosed, player_for_fight);
 				break;
 			}
 		}
@@ -240,12 +235,12 @@ int main(int argc, char* args[]) {
 	UnloadTexture(texGrass);
 	UnloadTexture(texWave);
 	UnloadTexture(texWave2);
-	UnloadTexture(texPoison);
+	UnloadTexture(texCloud);
 	UnloadImage(img_vs_1);
 	UnloadImage(img_vs_3);
 	UnloadImage(imLightning);
 	UnloadImage(imGrass);
-	UnloadImage(imPoison);
+	UnloadImage(imCloud);
 	UnloadImage(imWave2);
 	UnloadImage(imWave);
 	UnloadImage(imFireball);

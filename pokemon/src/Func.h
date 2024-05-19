@@ -27,7 +27,7 @@ enum GameState {
 	STATE_CHOOSE_MODE,
 	STATE_CHOOSE_POKEMON,
 	STATE_FIGHT,
-	STATE_END,
+	//STATE_END,
 };
 
 enum NameOfSuper {
@@ -35,7 +35,7 @@ enum NameOfSuper {
 	Fireball,
 	Entangling_vine,
 	Tsunami,
-	Mind_Attack,
+	Sound_Attack,
 	Poisonous_cloud,
 };
 
@@ -44,12 +44,12 @@ extern Image imFireball;
 extern Image imFireball2;
 extern Image imWave;
 extern Image imWave2;
-extern Image imClaw;
 extern Image imGrass;
-extern Image imPoison;
-extern Texture2D texClaw;
+extern Image imCloud;
+extern Image imSound;
 extern Texture2D texGrass;
-extern Texture2D texPoison;
+extern Texture2D texCloud;
+extern Texture2D texSound;
 extern Texture2D arrow;
 extern Texture2D arrow_left;
 extern Texture2D texFireball;
@@ -64,6 +64,7 @@ extern bool isShowing;
 extern bool choosed_pokemon1;
 extern bool choosed_pokemon2;
 extern bool show;
+extern bool block;
 extern vector <int> vec;
 extern float timer;
 extern const float displayDuration;
@@ -73,11 +74,11 @@ extern int win_player;
 extern unsigned int nextFrameDataOffset;
 extern int currentAnimFrame;
 extern int frameDelay;
+extern int frameDelay_for_cloud;
 extern int frameCounter;
 extern int animFrames_for_light;
 extern int animFrames_for_fire;
 extern int animFrames_for_water;
-extern int animFrames_for_claw;
 extern bool isPlaying;
 extern Vector2 startPos1;
 extern Vector2 endPos1;
@@ -91,14 +92,8 @@ extern Vector2 startPos2_for_wave;
 extern Vector2 endPos2_for_wave;
 extern Vector2 currentPos_for_wave;
 extern Vector2 currentPos2_for_wave;
-extern Vector2 startPos_for_claw;
-extern Vector2 endPos_for_claw;
-extern Vector2 currentPos_for_claw;
-extern Vector2 startPos2_for_claw;
-extern Vector2 endPos2_for_claw;
-extern Vector2 currentPos2_for_claw;
-extern Vector2 currentPos_for_cloud;
-extern Vector2 currentPos2_for_cloud;
+extern Vector2 position1;
+extern Vector2 position2;
 
 Color ColorFromHex(int hexValue);
 
@@ -112,6 +107,6 @@ vector<Pokemon> choose_the_pokemon(vector<Pokemon>& mass, vector<Pokemon>& mass_
 
 int chooseNextAlivePokemonIndex(vector<Pokemon>& pokemons, int currentIndex);
 
-void fight(vector <Pokemon>& mass_for_me, vector <Pokemon>& mass_for_enemy, int cnt, int& pos_y, int& pos_x, int& player_for_fight, Texture2D texLightning, Image imLightning);
+void fight(vector <Pokemon>& mass_for_me, vector <Pokemon>& mass_for_enemy, int cnt, int& pos_y, int& pos_x, int& player_for_fight);
 
 Vector2 get_mouse_pos();
