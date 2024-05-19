@@ -104,11 +104,11 @@ int main(int argc, char* args[]) {
 	texWave= LoadTextureFromImage(imWave);
 	imWave2 = LoadImage("data/wave_sprite2.png");
 	texWave2= LoadTextureFromImage(imWave2);
-	imGrass = LoadImage("data/grass2.png");
+	imGrass = LoadImage("data/grass.png");
 	texGrass= LoadTextureFromImage(imGrass);
 	imCloud = LoadImage("data/poison_sprite.png");
 	texCloud= LoadTextureFromImage(imCloud);
-	imSound = LoadImage("data/sound_sprite1.png");
+	imSound = LoadImage("data/sound_sprite.png");
 	texSound= LoadTextureFromImage(imSound);
 
 	Texture2D charmander = LoadTexture("data/charmander.png");
@@ -236,10 +236,12 @@ int main(int argc, char* args[]) {
 	UnloadTexture(texWave);
 	UnloadTexture(texWave2);
 	UnloadTexture(texCloud);
+	UnloadTexture(texSound);
 	UnloadImage(img_vs_1);
 	UnloadImage(img_vs_3);
 	UnloadImage(imLightning);
 	UnloadImage(imGrass);
+	UnloadImage(imSound);
 	UnloadImage(imCloud);
 	UnloadImage(imWave2);
 	UnloadImage(imWave);
