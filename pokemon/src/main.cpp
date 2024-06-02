@@ -24,8 +24,20 @@ Texture2D texGrass;
 Texture2D texSound;
 Texture2D arrow;
 Texture2D arrow_left;
+Sound sndHit;
+Sound sndLight;
+Sound sndFire;
+Sound sndTsunami;
+Sound sndGrass;
+Sound sndSound;
+Sound sndPoison;
+Sound sndChoose;
+Sound sndMana;
+Sound sndIChooseYou;
 Font font;
 bool isShowing = false;
+bool isDying1 = false;
+bool isDying2 = false;
 float timer = 0.0f;
 const float displayDuration = 3.0f;
 bool end_of_choose;
@@ -47,7 +59,6 @@ int animFrames_for_fire = 0;
 int animFrames_for_water = 11;
 bool isPlaying = false;
 vector <int> vec;
-//bool isDamageApplied = false;
 Vector2 startPos1 = { 200, 550 };
 Vector2 endPos1 = { 1600, 550 };
 Vector2 currentPos1 = startPos1;
@@ -65,13 +76,23 @@ Vector2 position2 = { 0, 380 };
 
 
 int main(int argc, char* args[]) {
+	InitAudioDevice();
 	vector <Pokemon> pokemons;
 	ifstream data("pokemon_data.txt");
 	string line;
+	int tempClass;
+	int tempWeakness;
+	int tempAttack;
 	while (getline(data, line)) {
 		istringstream k(line);
 		Pokemon pokemon;
-		k >> pokemon.name >> pokemon.health >> pokemon.damage >> pokemon.mana >> pokemon.element >> pokemon.weakness >> pokemon.special_name >> pokemon.special_damage;
+		k >> pokemon.name >> pokemon.health >> pokemon.damage >> pokemon.mana >> pokemon.special_damage;
+		k >> tempClass;
+		pokemon.element = (Class)tempClass;
+		k >> tempWeakness;
+		pokemon.weakness = (Class)tempWeakness;
+		k >> tempAttack;
+		pokemon.special_name = (NameOfSuper)tempAttack;
 		pokemons.push_back(pokemon);
 	}
 
@@ -80,7 +101,7 @@ int main(int argc, char* args[]) {
 
 	const int screenWidth = 1600;
 	const int screenHeight = 900;
-	InitWindow(screenWidth, screenHeight, "Pokemons with Raylib");
+	InitWindow(screenWidth, screenHeight, "Pokemashki");
 	SetTargetFPS(60);
 
 	font = LoadFont("data/Roboto-Regular.ttf");
@@ -94,7 +115,7 @@ int main(int argc, char* args[]) {
 	Texture2D vs_1 = LoadTextureFromImage(img_vs_1);
 	Texture2D vs_3 = LoadTextureFromImage(img_vs_3);
 
-	imLightning = LoadImageAnim("data/lightning.gif", &animFrames_for_light);
+	imLightning = LoadImage("data/light_sprite.png");
 	texLightning = LoadTextureFromImage(imLightning);
 	imFireball = LoadImageAnim("data/fireball1.gif", &animFrames_for_fire);
 	texFireball = LoadTextureFromImage(imFireball);
@@ -110,6 +131,28 @@ int main(int argc, char* args[]) {
 	texCloud= LoadTextureFromImage(imCloud);
 	imSound = LoadImage("data/sound_sprite.png");
 	texSound= LoadTextureFromImage(imSound);
+	sndHit = LoadSound("sound/ooh.mp3");
+	//SetSoundVolume(sndHit, 0.2f);
+	sndLight = LoadSound("sound/light.mp3");
+	sndFire = LoadSound("sound/fire.mp3");
+	//SetSoundVolume(sndFire, 0.2f);
+	sndFire = LoadSound("sound/fire.mp3");
+	//SetSoundVolume(sndFire, 0.2f);
+	sndTsunami = LoadSound("sound/water.mp3");
+	//SetSoundVolume(sndTsunami, 0.2f);
+	sndGrass = LoadSound("sound/grass.mp3");
+	//SetSoundVolume(sndGrass, 0.2f);
+	sndPoison = LoadSound("sound/poison.mp3");
+	//SetSoundVolume(sndPoison, 0.2f);
+	sndSound = LoadSound("sound/sound.mp3");
+	//SetSoundVolume(sndSound, 0.2f);
+	sndChoose = LoadSound("sound/choose.mp3");
+	//SetSoundVolume(sndChoose, 0.2f);
+	sndMana = LoadSound("sound/mana.mp3");
+	//SetSoundVolume(sndMana, 0.2f);
+	Sound sndMusic = LoadSound("sound/music.mp3");
+	SetSoundVolume(sndMusic, 0.2f);
+	sndIChooseYou = LoadSound("sound/ichooseyou.mp3");
 
 	Texture2D charmander = LoadTexture("data/charmander.png");
 	pokemons[1].texture = charmander;
@@ -152,7 +195,9 @@ int main(int argc, char* args[]) {
 
 		ClearBackground(WHITE);
 
-
+		if (!IsSoundPlaying(sndMusic)) {
+			PlaySound(sndMusic);
+		}
 		switch (state) {
 			case STATE_CHOOSE_MODE: {
 				string mod_message = "Choose fight mod";

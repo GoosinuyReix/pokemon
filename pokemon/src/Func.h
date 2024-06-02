@@ -6,14 +6,32 @@
 #include <iostream>
 using namespace std;
 
+enum Class {
+	CLASS_ELECTRIC,
+	CLASS_FIRE,
+	CLASS_NATURE,
+	CLASS_WATER,
+	CLASS_SOUND,
+	CLASS_POISON,
+};
+
+enum NameOfSuper {
+	Electric_stan,
+	Fireball,
+	Entangling_vine,
+	Tsunami,
+	Sound_Attack,
+	Poisonous_cloud,
+};
+
 struct Pokemon {
 	string name;
-	string special_name;
+	NameOfSuper special_name;
 	int health;
 	int damage;
 	int mana;
 	int special_damage;
-	string element, weakness;
+	Class element, weakness;
 	Texture2D texture;
 	bool isDead = false;
 };
@@ -27,17 +45,8 @@ enum GameState {
 	STATE_CHOOSE_MODE,
 	STATE_CHOOSE_POKEMON,
 	STATE_FIGHT,
-	//STATE_END,
 };
 
-enum NameOfSuper {
-	Electric_stan,
-	Fireball,
-	Entangling_vine,
-	Tsunami,
-	Sound_Attack,
-	Poisonous_cloud,
-};
 
 extern Image imLightning;
 extern Image imFireball;
@@ -57,6 +66,16 @@ extern Texture2D texFireball2;
 extern Texture2D texLightning;
 extern Texture2D texWave;
 extern Texture2D texWave2;
+extern Sound sndHit;
+extern Sound sndLight;
+extern Sound sndFire;
+extern Sound sndTsunami;
+extern Sound sndGrass;
+extern Sound sndSound;
+extern Sound sndPoison;
+extern Sound sndChoose;
+extern Sound sndMana;
+extern Sound sndIChooseYou;
 extern Font font;
 extern GameState state;
 extern bool switched;
@@ -65,6 +84,8 @@ extern bool choosed_pokemon1;
 extern bool choosed_pokemon2;
 extern bool show;
 extern bool block;
+extern bool isDying1;
+extern bool isDying2;
 extern vector <int> vec;
 extern float timer;
 extern const float displayDuration;
