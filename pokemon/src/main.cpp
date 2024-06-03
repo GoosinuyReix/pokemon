@@ -14,6 +14,8 @@ Image imGrass;
 Image imCloud;
 Image imSound;
 Image imLightning;
+Image imClaw;
+Texture2D texClaw;
 Texture2D texCloud;
 Texture2D texFireball;
 Texture2D texFireball2;
@@ -115,6 +117,9 @@ int main(int argc, char* args[]) {
 	Texture2D vs_1 = LoadTextureFromImage(img_vs_1);
 	Texture2D vs_3 = LoadTextureFromImage(img_vs_3);
 
+
+	imClaw = LoadImage("data/claw_sprite.png");
+	texClaw = LoadTextureFromImage(imClaw);
 	imLightning = LoadImage("data/light_sprite.png");
 	texLightning = LoadTextureFromImage(imLightning);
 	imFireball = LoadImageAnim("data/fireball1.gif", &animFrames_for_fire);
@@ -181,6 +186,7 @@ int main(int argc, char* args[]) {
 	int player_for_fight = 1;
 	end_of_choose = false;
 	switched = false;
+	bool pause = false;
 
 	GameState state = STATE_CHOOSE_MODE;
 
@@ -198,6 +204,7 @@ int main(int argc, char* args[]) {
 		if (!IsSoundPlaying(sndMusic)) {
 			PlaySound(sndMusic);
 		}
+
 		switch (state) {
 			case STATE_CHOOSE_MODE: {
 				string mod_message = "Choose fight mod";

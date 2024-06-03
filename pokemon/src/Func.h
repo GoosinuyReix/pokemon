@@ -56,6 +56,8 @@ extern Image imWave2;
 extern Image imGrass;
 extern Image imCloud;
 extern Image imSound;
+extern Image imClaw;
+extern Texture2D texClaw;
 extern Texture2D texGrass;
 extern Texture2D texCloud;
 extern Texture2D texSound;

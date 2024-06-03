@@ -177,6 +177,8 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 		DrawTextEx(font, message6.c_str(), Vector2{ 900, 720 }, 74, 0, BLACK);
 		bool position_changed = false;
 		if (mass_for_me[0].mana < 10) pos_y = 630;
+
+
 		if (!position_changed && pos_y == 430 && !block) {
 			if (mass_for_me[0].mana - 25 < 0) {
 				if (IsKeyPressed(KEY_DOWN)) {
@@ -190,27 +192,50 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			}
 			string message3 = "Damage: " + to_string(mass_for_me[0].damage);
 			DrawTextEx(font, message3.c_str(), { 900, 900 }, 80, 0, BLACK);
-			DrawTextEx(font, "Mana: -10", {900, 1000}, 80, 0, BLACK);
+			DrawTextEx(font, "Mana: -10", { 900, 1000 }, 80, 0, BLACK);
 
 			if (IsKeyPressed(KEY_SPACE)) {
+				isPlaying = true;
+				currentAnimFrame = 0;
+				frameCounter = 0;
+			}
+
+			if (isPlaying) {
+				frameCounter++;
+				if (frameCounter >= frameDelay_for_cloud) {
+					frameCounter = 0;
+					currentAnimFrame++;
+					if (currentAnimFrame >= 7) {
+						currentAnimFrame = 0;
+						isPlaying = false;
+						StopSound(sndHit);
+						if (mass_for_enemy[0].weakness == mass_for_me[0].element) {
+							mass_for_enemy[0].health -= int(mass_for_me[0].damage * 1.2);
+						}
+						else {
+							mass_for_enemy[0].health -= mass_for_me[0].damage;
+						}
+						mass_for_me[0].mana -= 10;
+						if (mass_for_enemy[0].health < 0) {
+							mass_for_enemy[0].health = 0;
+						}
+						if (player_for_fight == 1) player_for_fight = 2;
+						else player_for_fight = 1;
+						pos_y = 430;
+					}
+				}
+				float frameWidth = (float)(texClaw.width / 8);
+				Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texClaw.height };
+
 				if (!IsSoundPlaying(sndHit)) {
 					PlaySound(sndHit);
 				}
-				mass_for_me[0].mana -= 10;
-				if (mass_for_enemy[0].weakness == mass_for_me[0].element) {
-					mass_for_enemy[0].health -= int(mass_for_me[0].damage * 1.2);
-				}
-				else {
-					mass_for_enemy[0].health -= mass_for_me[0].damage;
-				}
-				if (mass_for_enemy[0].health < 0) {
-					mass_for_enemy[0].health = 0;
-				}
+
 				if (player_for_fight == 1) {
-					player_for_fight = 2;
+					DrawTextureRec(texClaw, frameRec, { 1480,520 }, BLACK);
 				}
 				else {
-					player_for_fight = 1;
+					DrawTextureRec(texClaw, frameRec, { 30, 520 }, BLACK);
 				}
 			}
 		}
@@ -227,11 +252,10 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			string message41 = "Damage: " + to_string(mass_for_me[0].special_damage);
 			DrawTextEx(font, message4.c_str(), { 900, 900 }, 80, 0, BLACK);
 			DrawTextEx(font, message41.c_str(), { 900, 1000 }, 80, 0, BLACK);
-			DrawTextEx(font, "Mana: -25", {900, 1100}, 80, 0, BLACK);
+			DrawTextEx(font, "Mana: -25", { 900, 1100 }, 80, 0, BLACK);
 
 			if (IsKeyPressed(KEY_SPACE)) {
 				isShowing = true;
-				timer = 0.0f;
 				isPlaying = true;
 				currentAnimFrame = 0;
 				frameCounter = 0;
@@ -256,7 +280,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						}
 						float frameWidth = (float)(texLightning.width / 23);
 						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texLightning.height };
-						
+
 						if (!IsSoundPlaying(sndLight)) {
 							PlaySound(sndLight);
 						}
@@ -357,7 +381,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 								}
 							}
 							DrawTexture(texFireball, (int)currentPos1.x, (int)currentPos1.y, WHITE);
-						}	
+						}
 						else {
 							if (currentPos2.x > endPos2.x)
 							{
@@ -528,7 +552,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						float frameWidth = (float)(texCloud.width / 18);
 						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texCloud.height };
 
-						
+
 
 						if (player_for_fight == 1) {
 							DrawTextureRec(texCloud, frameRec, position1, WHITE);
@@ -570,8 +594,8 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						float frameWidth = (float)(texSound.width / 10);
 						Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texSound.height };
 
-						DrawTextureRec(texSound, frameRec, Vector2{400, 460}, WHITE);
-						
+						DrawTextureRec(texSound, frameRec, Vector2{ 400, 460 }, WHITE);
+
 						break;
 					}
 				}
@@ -818,39 +842,66 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				}
 				string message3 = "Damage: " + to_string(mass_for_me[i1].damage);
 				DrawTextEx(font, message3.c_str(), { 850, 950 }, 80, 0, BLACK);
-				DrawTextEx(font, "Mana: -10", {850, 1050}, 80, 0, BLACK);
+				DrawTextEx(font, "Mana: -10", { 850, 1050 }, 80, 0, BLACK);
 
 				if (mass_for_me[i].mana - 10 < 0) {
 					pos_y = 630;
 				}
-				else if (IsKeyPressed(KEY_SPACE)) {
+				if (IsKeyPressed(KEY_SPACE)) {
+					isPlaying = true;
+					currentAnimFrame = 0;
+					frameCounter = 0;
+				}
+				if (isPlaying) {
+					frameCounter++;
+					if (frameCounter >= frameDelay_for_cloud) {
+						frameCounter = 0;
+						currentAnimFrame++;
+						if (currentAnimFrame >= 7) {
+							currentAnimFrame = 0;
+							isPlaying = false;
+							StopSound(sndHit);
+							if (player_for_fight == 1) {
+								if (mass_for_enemy[i2].weakness == mass_for_me[i1].element) {
+									mass_for_enemy[i2].health -= int(mass_for_me[i1].damage * 1.2);
+								}
+								else {
+									mass_for_enemy[i2].health -= mass_for_me[i1].damage;
+								}
+								mass_for_me[i1].mana -= 10;
+								if (mass_for_enemy[i2].health < 0) {
+									mass_for_enemy[i2].health = 0;
+								}
+								player_for_fight = 2;
+							}
+							else {
+								if (mass_for_enemy[i1].weakness == mass_for_me[i2].element) {
+									mass_for_enemy[i1].health -= int(mass_for_me[i2].damage * 1.2);
+								}
+								else {
+									mass_for_enemy[i1].health -= mass_for_me[i2].damage;
+								}
+								mass_for_me[i2].mana -= 10;
+								if (mass_for_enemy[i1].health < 0) {
+									mass_for_enemy[i1].health = 0;
+								}
+								player_for_fight = 1;
+							}
+							pos_y = 430;
+						}
+					}
+					float frameWidth = (float)(texClaw.width / 8);
+					Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texClaw.height };
+
 					if (!IsSoundPlaying(sndHit)) {
 						PlaySound(sndHit);
 					}
-					mass_for_me[i].mana -= 10;
+
 					if (player_for_fight == 1) {
-						if (mass_for_enemy[i2].weakness == mass_for_me[i1].element) {
-							mass_for_enemy[i2].health -= int(mass_for_me[i1].damage * 1.2);
-						}
-						else {
-							mass_for_enemy[i2].health -= mass_for_me[i1].damage;
-						}
-						if (mass_for_enemy[i2].health < 0) {
-							mass_for_enemy[i2].health = 0;
-						}
-						player_for_fight = 2;
+						DrawTextureRec(texClaw, frameRec, { 1480,520 }, BLACK);
 					}
 					else {
-						if (mass_for_enemy[i1].weakness == mass_for_me[i2].element) {
-							mass_for_enemy[i1].health -= int(mass_for_me[i2].damage * 1.2);
-						}
-						else {
-							mass_for_enemy[i1].health -= mass_for_me[i2].damage;
-						}
-						if (mass_for_enemy[i1].health < 0) {
-							mass_for_enemy[i1].health = 0;
-						}
-						player_for_fight = 1;
+						DrawTextureRec(texClaw, frameRec, { 30, 520 }, BLACK);
 					}
 				}
 			}
@@ -869,7 +920,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				string message41 = "Damage: " + to_string(mass_for_me[i].special_damage);
 				DrawTextEx(font, message4.c_str(), { 850, 950 }, 80, 0, BLACK);
 				DrawTextEx(font, message41.c_str(), { 850, 1050 }, 80, 0, BLACK);
-				DrawTextEx(font, "Mana: -25", {850, 1150}, 80, 0, BLACK);
+				DrawTextEx(font, "Mana: -25", { 850, 1150 }, 80, 0, BLACK);
 				float deltaTime = GetFrameTime();
 				if (IsKeyPressed(KEY_SPACE)) {
 					isShowing = true;
@@ -1211,7 +1262,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 						}
 					}
 					case Sound_Attack: {
-						if (isPlaying){
+						if (isPlaying) {
 							if (!IsSoundPlaying(sndSound)) {
 								PlaySound(sndSound);
 							}
