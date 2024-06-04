@@ -21,7 +21,7 @@ string enumToString1(NameOfSuper attack) {
 	string a;
 	if (attack == 0) a = "Electric stan";
 	else if (attack == 1) a = "Fireball";
-	else if (attack == 2) a = "Entangling_vine";
+	else if (attack == 2) a = "Entangling vine";
 	else if (attack == 3) a = "Tsunami";
 	else if (attack == 4) a = "Sound Attack";
 	else if (attack == 5) a = "Poison Cloud";
@@ -178,7 +178,6 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 		bool position_changed = false;
 		if (mass_for_me[0].mana < 10) pos_y = 630;
 
-
 		if (!position_changed && pos_y == 430 && !block) {
 			if (mass_for_me[0].mana - 25 < 0) {
 				if (IsKeyPressed(KEY_DOWN)) {
@@ -201,6 +200,9 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 			}
 
 			if (isPlaying) {
+				if (!IsSoundPlaying(sndHit)) {
+					PlaySound(sndHit);
+				}
 				frameCounter++;
 				if (frameCounter >= frameDelay_for_cloud) {
 					frameCounter = 0;
@@ -227,9 +229,7 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 				float frameWidth = (float)(texClaw.width / 8);
 				Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texClaw.height };
 
-				if (!IsSoundPlaying(sndHit)) {
-					PlaySound(sndHit);
-				}
+				
 
 				if (player_for_fight == 1) {
 					DrawTextureRec(texClaw, frameRec, { 1480,520 }, BLACK);
@@ -853,6 +853,9 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					frameCounter = 0;
 				}
 				if (isPlaying) {
+					if (!IsSoundPlaying(sndHit)) {
+						PlaySound(sndHit);
+					}
 					frameCounter++;
 					if (frameCounter >= frameDelay_for_cloud) {
 						frameCounter = 0;
@@ -892,10 +895,6 @@ void fight(vector <Pokemon>& mass_for_player1, vector <Pokemon>& mass_for_player
 					}
 					float frameWidth = (float)(texClaw.width / 8);
 					Rectangle frameRec = { frameWidth * currentAnimFrame, 0, frameWidth, (float)texClaw.height };
-
-					if (!IsSoundPlaying(sndHit)) {
-						PlaySound(sndHit);
-					}
 
 					if (player_for_fight == 1) {
 						DrawTextureRec(texClaw, frameRec, { 1480,520 }, BLACK);

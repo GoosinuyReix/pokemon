@@ -136,7 +136,8 @@ int main(int argc, char* args[]) {
 	texCloud= LoadTextureFromImage(imCloud);
 	imSound = LoadImage("data/sound_sprite.png");
 	texSound= LoadTextureFromImage(imSound);
-	sndHit = LoadSound("sound/ooh.mp3");
+
+	sndHit = LoadSound("sound/hit.mp3");
 	//SetSoundVolume(sndHit, 0.2f);
 	sndLight = LoadSound("sound/light.mp3");
 	sndFire = LoadSound("sound/fire.mp3");
@@ -157,7 +158,6 @@ int main(int argc, char* args[]) {
 	//SetSoundVolume(sndMana, 0.2f);
 	Sound sndMusic = LoadSound("sound/music.mp3");
 	SetSoundVolume(sndMusic, 0.2f);
-	sndIChooseYou = LoadSound("sound/ichooseyou.mp3");
 
 	Texture2D charmander = LoadTexture("data/charmander.png");
 	pokemons[1].texture = charmander;
